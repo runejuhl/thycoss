@@ -1,0 +1,8 @@
+# -*- mode: sh; sh-shell: bash; -*-
+# shellcheck disable=SC2034
+
+BASEURL='https://secretserver.contoso.com/SecretServer'
+USERNAME='myuser'
+PASS_PATH='www/secretserver.contoso.com'
+DOMAIN='contoso.com'
+CURL_DEFAULT_ARGS+=( '--socks5-hostname' 'localhost:8880' )

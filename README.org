@@ -1,0 +1,27 @@
+* thycoss
+Bash script for operating on Thycotic Secret Server using the REST API. Use this
+for building scripts around the Thycotic Secret Server API.
+
+Uses [[https://www.passwordstore.org/][pass]] for looking up passwords. Configurable with multiple profiles stored
+in ~${XDG_CONFIG_HOME}/thycoss/~.
+
+For reasons unknown the good people from Thycotic have put their REST API
+documentation behind a login. If you have access to an instance of Secret Server
+you can find the API documentation at the path
+~/SecretServer/Documents/restapi/TokenAuth/~.
+
+** Example
+#+begin_example
+$ THYCOSS_PROFILE=corp ./examples/get_version.sh
+{
+  "model": {
+    "version": "10.7.000000"
+  },
+  "exceptions": [],
+  "messageText": null,
+  "friendlyMessageText": null,
+  "success": true,
+  "severity": "None",
+  "errors": []
+}
+#+end_example
