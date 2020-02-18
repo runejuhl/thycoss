@@ -19,6 +19,25 @@ function _curl_form() {
 
   declare -a curl_args=( "${CURL_DEFAULT_ARGS[@]}" )
 
+  case "${method}" in
+    GET)
+      if (( "${#}" )); then
+        curl_args+=( '--get' )
+      fi
+      ;;
+    POST)
+      if ! (( "${#}" )); then
+        curl_args+=(
+          '--data' '@-'
+          '--header' 'Content-type: application/json'
+        )
+      fi
+      ;;
+    *)
+      curl_args+=( "-X${method}" )
+      ;;
+  esac
+
   while (( "${#}" )); do
     curl_args+=(
       '--data-urlencode' "${1}"
@@ -27,23 +46,19 @@ function _curl_form() {
   done
 
   out=$(curl \
-          "-X${method^^}"                 \
-          --no-keepalive                  \
-          "${curl_args[@]}"               \
+          --no-keepalive    \
+          "${curl_args[@]}" \
           "${BASEURL}${endpoint}")
 
-  if [[ "${out}" ]]; then
+  if [[ -n "${out}" ]]; then
     jq . <<< "${out}"
   fi
 }
 
 function _exit() {
   if [[ "${TOKEN}" && "${TOKEN}" != 'null' ]]; then
-    # curl -d '' \
-    #      "${CURL_DEFAULT_ARGS[@]}"               \
-    #      "${BASEURL}/api/v1/oauth-expiration"
-    CURL_DEFAULT_ARGS+=( '-d' '' )
-    _curl_form post '/api/v1/oauth-expiration' >/dev/null
+    >&2 echo 'Logging out...'
+    _curl_form post '/api/v1/oauth-expiration' <<< '' >/dev/null
   fi
 }
 
@@ -70,16 +85,6 @@ done
 ORGANIZATION="${ORGANIZATION:-}"
 DOMAIN="${DOMAIN:-}"
 PASSWORD="$(pass show "${PASS_PATH}" | head -n1)"
-
-# TOKEN=$(curl                                      \
-#           --data-urlencode "username=${USERNAME}" \
-#           --data-urlencode "password=${PASSWORD}" \
-#           --data-urlencode "organization=${ORGANIZATION}"        \
-#           --data-urlencode "domain=${DOMAIN}"     \
-#           --data-urlencode 'grant_type=password'  \
-#           "${CURL_DEFAULT_ARGS[@]}"               \
-#           "${BASEURL}/oauth2/token" |
-#           jq -r .access_token)
 
 TOKEN=$(_curl_form post '/oauth2/token'             \
                    "username=${USERNAME}"         \
