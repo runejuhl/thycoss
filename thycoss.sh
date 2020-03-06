@@ -56,7 +56,7 @@ function _curl_form() {
 }
 
 function _exit() {
-  if [[ "${TOKEN}" && "${TOKEN}" != 'null' ]]; then
+  if [[ -v TOKEN && "${TOKEN}" && "${TOKEN}" != 'null' ]]; then
     >&2 echo 'Logging out...'
     _curl_form post '/api/v1/oauth-expiration' <<< '' >/dev/null
   fi
