@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# Retrive named password from Secret Server, storing it in clipboard and
+# clearing it after 45 seconds.
+
+set -euo pipefail
+
+# shellcheck source=../thycoss.sh
+. "$(dirname "$(realpath -e "${BASH_SOURCE[0]}")")/../thycoss.sh"
+
+declare -i pass_id="$1"
+
+if [[ ! "${pass_id}" =~ ^[0-9]+$ ]]; then
+  _info <<< 'Invalid password ID'
+  exit 1
+fi
+
+_curl_form get "/api/v1/secrets/${pass_id}" | \
+  jq --join-output '.items[]|select(.fieldId == 110)|.itemValue' | \
+  _set_selection
