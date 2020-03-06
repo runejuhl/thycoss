@@ -10,7 +10,33 @@ XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 THYCOSS_PROFILE="${THYCOSS_PROFILE:-default}"
 
 declare -x BASEURL USERNAME PASS_PATH DOMAIN TOKEN
+declare -x X_SELECTION=clipboard
 declare -ax CURL_DEFAULT_ARGS=( '--silent' )
+declare -x OLD_SELECTION
+
+function _ts() {
+  ts '[%FT%T%z]'
+}
+
+function _info() {
+  cat | _ts
+}
+
+function _debug() {
+  if [[ ! -v DEBUG ]] && [[ ! "${DEBUG}" ]]; then
+    return
+  fi
+
+  cat | _ts >&2
+}
+
+function _set_selection() {
+  OLD_SELECTION="$(xclip -selection "${X_SELECTION}" -out 2>/dev/null || true)"
+
+  xclip -selection "${X_SELECTION}"
+  >&2 echo -n 'Copied password to clipboard; clearing in 45 seconds...'
+  sleep 45
+}
 
 function _curl_form() {
   declare method="${1^^}" \
@@ -56,6 +82,11 @@ function _curl_form() {
 }
 
 function _exit() {
+  if [[ -v OLD_SELECTION && "${OLD_SELECTION}" ]]; then
+    _debug <<< 'Clipboard cleared.'
+    xclip -selection "${X_SELECTION}" <<< "${OLD_SELECTION}"
+  fi
+
   if [[ -v TOKEN && "${TOKEN}" && "${TOKEN}" != 'null' ]]; then
     >&2 echo 'Logging out...'
     _curl_form post '/api/v1/oauth-expiration' <<< '' >/dev/null
