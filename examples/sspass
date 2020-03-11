@@ -16,5 +16,5 @@ if [[ ! "${pass_id}" =~ ^[0-9]+$ ]]; then
 fi
 
 _curl_form get "/api/v1/secrets/${pass_id}" | \
-  jq --join-output '.items[]|select(.fieldId == 110)|.itemValue' | \
+  jq --join-output '.items[]|select(.isPassword)|select(.slug == "password")|.itemValue' | \
   _set_selection
