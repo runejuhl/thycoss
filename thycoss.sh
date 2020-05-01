@@ -113,19 +113,21 @@ until [[ "${PASS_PATH}" ]]; do
   read -r -p 'Username: ' PASS_PATH
 done
 
-ORGANIZATION="${ORGANIZATION:-}"
-DOMAIN="${DOMAIN:-}"
-PASSWORD="$(pass show "${PASS_PATH}" | head -n1)"
+if [[ ! -v TOKEN || -z "${TOKEN}" ]]; then
+  ORGANIZATION="${ORGANIZATION:-}"
+  DOMAIN="${DOMAIN:-}"
+  PASSWORD="$(pass show "${PASS_PATH}" | head -n1)"
 
-TOKEN=$(_curl_form post '/oauth2/token'             \
-                   "username=${USERNAME}"         \
-                   "password=${PASSWORD}"         \
-                   "organization=${ORGANIZATION}" \
-                   "domain=${DOMAIN}"             \
-                   'grant_type=password'  |
-          jq -r .access_token)
+  TOKEN=$(_curl_form post '/oauth2/token'             \
+                     "username=${USERNAME}"         \
+                     "password=${PASSWORD}"         \
+                     "organization=${ORGANIZATION}" \
+                     "domain=${DOMAIN}"             \
+                     'grant_type=password'  |
+            jq -r .access_token)
 
-CURL_DEFAULT_ARGS+=( '--header' "Authorization: Bearer ${TOKEN}" )
+  CURL_DEFAULT_ARGS+=( '--header' "Authorization: Bearer ${TOKEN}" )
+fi
 
 # Example:
 #   _curl_form get '/api/v1/version'
