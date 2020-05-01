@@ -53,3 +53,4 @@ _curl_form post '/api/v1/secrets' <<EOF
     }
   ]
 }
+EOF
