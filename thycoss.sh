@@ -71,10 +71,15 @@ function _curl_form() {
     shift
   done
 
-  out=$(curl \
+  out=$(curl                \
           --no-keepalive    \
           "${curl_args[@]}" \
           "${BASEURL}${endpoint}")
+
+  if (( $? )); then
+    _info "Request failed; curl returned '${?}'"
+    exit 1
+  fi
 
   if [[ -n "${out}" ]]; then
     jq . <<< "${out}"
