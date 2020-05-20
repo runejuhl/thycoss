@@ -10,6 +10,16 @@ documentation behind a login. If you have access to an instance of Secret Server
 you can find the API documentation at the path
 ~/SecretServer/Documents/restapi/TokenAuth/~.
 
+** sspass
+~sspass~ is a pass-like script to fetch passwords from Secret Server, copy them
+to clipboard and automatically remove them after 45 seconds.
+
+*** Usage
+#+begin_example
+$ sspass 2377
+Copied password to clipboard; clearing in 45 seconds...Logging out...
+#+end_example
+
 ** Example
 #+begin_example
 $ THYCOSS_PROFILE=corp ./examples/get_version.sh
