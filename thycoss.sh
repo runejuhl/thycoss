@@ -34,7 +34,7 @@ function _set_selection() {
   OLD_SELECTION="$(xclip -selection "${X_SELECTION}" -out 2>/dev/null || true)"
 
   xclip -selection "${X_SELECTION}"
-  >&2 echo -n 'Copied password to clipboard; clearing in 45 seconds...'
+  >&2 echo 'Copied password to clipboard; clearing in 45 seconds...'
   sleep 45
 }
 
